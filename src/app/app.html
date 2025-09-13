@@ -55,6 +55,67 @@
       <span *ngIf="getCompletedCount() === todoList.length"> 🎉</span>
     </p>
   </div>
+
+  <!-- AI Chat Button -->
+  <button 
+    class="chat-toggle-btn" 
+    (click)="toggleChat()"
+    [class.active]="isChatOpen"
+  >
+    <span *ngIf="!isChatOpen">💬 AI Chat</span>
+    <span *ngIf="isChatOpen">✕ Close</span>
+  </button>
+
+  <!-- AI Chat Box -->
+  <div class="chat-container" [class.open]="isChatOpen">
+    <div class="chat-header">
+      <h3>AI Assistant</h3>
+      <button class="chat-close" (click)="toggleChat()">✕</button>
+    </div>
+    
+    <div class="chat-messages" #chatMessagesContainer>
+      <div 
+        *ngFor="let message of chatMessages; trackBy: trackChatByFn" 
+        class="chat-message"
+        [class.user]="message.isUser"
+        [class.ai]="!message.isUser"
+      >
+        <div class="message-content">
+          <p>{{ message.content }}</p>
+          <small class="timestamp">{{ message.timestamp | date:'short' }}</small>
+        </div>
+      </div>
+      
+      <!-- Loading indicator -->
+      <div *ngIf="isLoading" class="chat-message ai">
+        <div class="message-content">
+          <div class="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="chat-input">
+      <input
+        type="text"
+        [(ngModel)]="newMessage"
+        placeholder="Ask me anything or say 'add task: buy milk'"
+        (keyup.enter)="sendMessage()"
+        [disabled]="isLoading"
+      >
+      <button 
+        (click)="sendMessage()"
+        [disabled]="!newMessage.trim() || isLoading"
+        class="send-btn"
+      >
+        <span *ngIf="!isLoading">Send</span>
+        <span *ngIf="isLoading">...</span>
+      </button>
+    </div>
+  </div>
 </main>
 
 <router-outlet />
